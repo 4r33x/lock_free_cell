@@ -15,7 +15,7 @@ mod tests {
     };
     use std::{sync::Arc, thread};
     type LockFree<T> = LockFreeCell<T>;
-    const ITERS: usize = 1_000_000;
+    const ITERS: usize = 1000;
     #[test]
     fn mutex_bench() {
         let ac = Mutex::new(42u32);

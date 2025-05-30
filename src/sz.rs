@@ -1,6 +1,9 @@
 use crossbeam_utils::CachePadded;
 use seize::{Guard, reclaim};
-use std::sync::atomic::{AtomicPtr, Ordering};
+use std::{
+    mem::MaybeUninit,
+    sync::atomic::{AtomicPtr, Ordering},
+};
 
 use seize::Collector;
 const BATCH_SIZE: usize = 32;
@@ -23,6 +26,12 @@ impl<T> Node<T> {
     unsafe fn get<'a>(node: *mut Node<T>) -> &'a T {
         &unsafe { &*node }.value
     }
+    unsafe fn set(node: *mut Node<T>, value: T) {
+        unsafe { &mut *node }.value = value;
+    }
+    // fn new_owned_box(value: T) -> Box<Node<T>> {
+    //     Box::new(Self { value })
+    // }
 
     fn new_boxed(value: T) -> *mut Node<T> {
         Box::into_raw(Box::new(Self { value }))
@@ -46,21 +55,28 @@ impl<T> LockFreeCell<T> {
     }
 
     pub fn write_discard(&self, f: impl Fn(&T) -> T) {
+        let mut new_value = MaybeUninit::uninit();
+        let mut set = false;
         loop {
             let guard = self.collector.enter();
             let head = guard.protect(&self.head, RO);
-            let new_value = unsafe { Node::new_boxed(f(Node::get(head))) };
-            match self
+            let ptr = if set {
+                let ptr = unsafe { *new_value.as_mut_ptr() };
+                unsafe { Node::set(ptr, f(Node::get(head))) };
+                ptr
+            } else {
+                new_value.write(unsafe { Node::new_boxed(f(Node::get(head))) });
+                set = true;
+                unsafe { *new_value.as_mut_ptr() }
+            };
+
+            if self
                 .head
-                .compare_exchange(head, new_value, WO, Ordering::Relaxed)
+                .compare_exchange(head, ptr, WO, Ordering::Relaxed)
+                .is_ok()
             {
-                Ok(_) => {
-                    unsafe { guard.defer_retire(head, reclaim::boxed) };
-                    break;
-                }
-                Err(_) => {
-                    unsafe { drop(Box::from_raw(new_value)) };
-                }
+                unsafe { self.collector.retire(head, reclaim::boxed) };
+                break;
             };
         }
     }
