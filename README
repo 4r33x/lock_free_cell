@@ -1,0 +1,22 @@
+
+Epoch-based memory reclamation lockfree Cell prototype (its vibe coded, but it passes miri, so use at own risk)
+
+Readers always read lockfree and writing done via Copy-on-write mutation (also lockfree)
+
+Very bad criterion benchmark:
+
+my_lockfreecell_get             time:   [3.6020 ns 3.6161 ns 3.6302 ns]
+my_lockfreecell_contended_get   time:   [3.7202 ns 3.7506 ns 3.7786 ns]
+my_lockfreecell_update          time:   [18.008 ns 18.077 ns 18.149 ns]
+mutex                           time:   [3.3216 ns 3.3310 ns 3.3412 ns]
+mutex_contended                 time:   [70.211 ns 71.722 ns 73.184 ns]
+
+rwlock_write                    time:   [3.7093 ns 3.7214 ns 3.7335 ns]
+rwlock_contended_read           time:   [36.443 ns 37.853 ns 39.387 ns]
+arcswap_contended_get           time:   [3.3405 ns 3.3489 ns 3.3572 ns]
+arc_swap_update                 time:   [54.217 ns 54.362 ns 54.516 ns]
+arcshift_update                 time:   [18.772 ns 18.829 ns 18.895 ns]
+arcshift_contended_get          time:   [69.648 ns 71.027 ns 72.394 ns]
+my_spincell_update              time:   [3.4618 ns 3.4708 ns 3.4796 ns]
+my_spincell_get                 time:   [3.8248 ns 3.8339 ns 3.8437 ns]
+my_spincell_contended_get       time:   [29.100 ns 29.208 ns 29.312 ns]
