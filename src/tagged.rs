@@ -1,4 +1,4 @@
-use crossbeam_utils::Backoff;
+use crossbeam_utils::{Backoff, CachePadded};
 use std::{
     cell::UnsafeCell,
     sync::atomic::{AtomicUsize, Ordering},
@@ -24,7 +24,7 @@ impl<T> RefCountedData<T> {
 }
 
 pub struct SpinCell<T> {
-    inner: AtomicUsize, // tagged pointer + reader count
+    inner: CachePadded<AtomicUsize>, // tagged pointer + reader count
     _pd: PhantomData<T>,
 }
 
@@ -36,7 +36,7 @@ impl<T> SpinCell<T> {
 
         let addr = ptr as usize;
         Self {
-            inner: AtomicUsize::new(addr),
+            inner: CachePadded::new(AtomicUsize::new(addr)),
             _pd: PhantomData,
         }
     }
@@ -44,7 +44,7 @@ impl<T> SpinCell<T> {
     pub fn read<R>(&self, f: impl FnOnce(&T) -> R) -> R {
         let backoff = Backoff::new();
         loop {
-            let old = self.inner.load(Ordering::Relaxed);
+            let old = self.inner.load(Ordering::Acquire);
             let (addr, count) = Self::unpack(old);
 
             if count == READER_MASK {
@@ -57,7 +57,7 @@ impl<T> SpinCell<T> {
 
             match self
                 .inner
-                .compare_exchange_weak(old, new, Ordering::Acquire, Ordering::Relaxed)
+                .compare_exchange_weak(old, new, Ordering::Release, Ordering::Relaxed)
             {
                 Ok(_) => {
                     let ptr = unsafe { NonNull::new_unchecked(addr as *mut RefCountedData<T>) };
@@ -89,7 +89,7 @@ impl<T> SpinCell<T> {
     pub fn write_discard(&self, f: impl FnOnce(&mut T)) {
         let backoff = Backoff::new();
         loop {
-            let current = self.inner.load(Ordering::Relaxed);
+            let current = self.inner.load(Ordering::Acquire);
             let (addr, readers) = Self::unpack(current);
 
             if readers != 0 {
@@ -103,7 +103,7 @@ impl<T> SpinCell<T> {
             match self.inner.compare_exchange_weak(
                 current,
                 new,
-                Ordering::Acquire,
+                Ordering::Release,
                 Ordering::Relaxed,
             ) {
                 Ok(_) => {
@@ -126,7 +126,7 @@ impl<T> SpinCell<T> {
 impl<T> Drop for SpinCell<T> {
     #[inline(always)]
     fn drop(&mut self) {
-        let current = self.inner.load(Ordering::Relaxed);
+        let current = self.inner.load(Ordering::Acquire);
         let (addr, readers) = Self::unpack(current);
         debug_assert_eq!(readers, 0);
         let ptr = unsafe { NonNull::new_unchecked(addr as *mut RefCountedData<T>) };
