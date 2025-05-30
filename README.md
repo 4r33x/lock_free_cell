@@ -3,9 +3,9 @@ Batch memory reclamation lockfree Cell prototype (its vibe coded, but it passes 
 
 Readers always read lockfree and writing done via Copy-on-write mutation (also lockfree)
 
-Bench from arc_swap for int access: 
+Writes for large types could be done much faster via reusing allocatons (see src/sz2 and src/sz3)
 
-### Benchmark Comparison by Readers + Writers
+### Bench from arc_swap for int access: 
 
 | Readers + Writers | `rw`         | `arc-load-store` | `arc-rcu`      | `cell-rcu`     |
 |-------------------|--------------|------------------|----------------|----------------|
