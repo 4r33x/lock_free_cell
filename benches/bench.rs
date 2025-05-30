@@ -141,14 +141,14 @@ fn my_lockfreecell_update(c: &mut Criterion) {
 
 criterion_group!(
     benches,
-    my_lockfreecell_contended_bench,
+    arcswap_update,
     my_lockfreecell_update,
     my_lockfreecell_bench,
+    my_lockfreecell_contended_bench,
     mutex_bench,
     mutex_contended_bench,
     rwlock_write_bench,
     rwlock_contended_read_bench,
-    arcswap_update,
     arcswap_contended_get,
     arcshift_update_bench,
     arcshift_contended_bench,
