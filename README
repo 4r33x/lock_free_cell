@@ -1,5 +1,5 @@
 
-Epoch-based memory reclamation lockfree Cell prototype (its vibe coded, but it passes miri, so use at own risk)
+Batch memory reclamation lockfree Cell prototype (its vibe coded, but it passes miri, so use at own risk)
 
 Readers always read lockfree and writing done via Copy-on-write mutation (also lockfree)
 
