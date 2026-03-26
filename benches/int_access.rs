@@ -1,17 +1,16 @@
-//! These are very minimal benchmarks ‒ reading and writing an integer shared in
-//! different ways. You can compare the times and see the characteristics.
+//! Benchmarks reading and writing an integer shared in different ways.
+//! Compares all available concurrent cell types across various R+W thread combinations.
 
+use std::hint::black_box;
+use std::io::{self, Write};
 use std::sync::{Arc, Mutex, RwLock};
 use std::time::Instant;
-use std::{
-    hint::black_box,
-    io::{self, Write},
-};
 
 use arc_swap::ArcSwap;
-
+use arcshift::ArcShift;
 use crossbeam_utils::thread;
-use lock_free_cell::LockFreeCell;
+use hazarc::{AtomicArc, Cache};
+use lock_free_cell::{LockFreeCell, SpinCell};
 
 fn test_run<R, W>(
     name: &str,
@@ -61,6 +60,7 @@ where
     test_run(name, 4, 0, iterations, &r, &w);
     test_run(name, 8, 0, iterations, &r, &w);
     test_run(name, 1, 1, iterations, &r, &w);
+    test_run(name, 2, 2, iterations, &r, &w);
     test_run(name, 4, 1, iterations, &r, &w);
     test_run(name, 4, 2, iterations, &r, &w);
     test_run(name, 4, 4, iterations, &r, &w);
@@ -71,38 +71,129 @@ where
     test_run(name, 0, 4, iterations, &r, &w);
 }
 
+const ITERATIONS: usize = 100_000;
+
 fn main() {
-    let lock = RwLock::new(42);
+    // --- Mutex ---
+    let mutex = Mutex::new(42usize);
+    test_round(
+        "mutex",
+        ITERATIONS,
+        || *mutex.lock().unwrap(),
+        |i| *mutex.lock().unwrap() = i,
+    );
+
+    // --- RwLock ---
+    let lock = RwLock::new(42usize);
     test_round(
         "rw",
-        100_000,
+        ITERATIONS,
         || *lock.read().unwrap(),
         |i| *lock.write().unwrap() = i,
     );
 
-    let arc = ArcSwap::from(Arc::new(42));
+    // --- ArcSwap load/store ---
+    let arc = ArcSwap::from(Arc::new(42usize));
     test_round(
         "arc-load-store",
-        100_000,
+        ITERATIONS,
         || **arc.load(),
         |i| arc.store(Arc::new(i)),
     );
+
+    // --- ArcSwap RCU ---
     test_round(
         "arc-rcu",
-        100_000,
+        ITERATIONS,
         || *arc.load_full(),
         |i| {
             arc.rcu(|_| Arc::new(i));
         },
     );
-    let cell = LockFreeCell::new(32);
 
+    // --- ArcShift ---
+    // ArcShift::update takes &mut self, so we wrap in Mutex for multi-thread writes.
+    let shift_base = ArcShift::new(42usize);
+    let shift_r = shift_base.clone();
+    let shift_w = Mutex::new(shift_base);
     test_round(
-        "cell-rcu",
-        100_000,
+        "arcshift",
+        ITERATIONS,
+        || *shift_r.shared_get(),
+        |i| shift_w.lock().unwrap().update(i),
+    );
+
+    // --- Hazarc AtomicArc ---
+    let hazarc = AtomicArc::<usize>::new(Arc::new(42usize));
+    test_round(
+        "hazarc",
+        ITERATIONS,
+        || **hazarc.load(),
+        |i| hazarc.store(Arc::new(i)),
+    );
+
+    // --- Hazarc Cache ---
+    // Cache is thread-local, so each read thread needs its own.
+    // We benchmark it in a custom loop since test_round's read closure is shared.
+    println!("\n--- hazarc-cache (thread-local read cache) ---");
+    let hazarc_for_cache = AtomicArc::<usize>::new(Arc::new(42usize));
+    for &(rt, wt) in &[
+        (1, 0),
+        (2, 0),
+        (4, 0),
+        (8, 0),
+        (1, 1),
+        (4, 1),
+        (4, 2),
+        (4, 4),
+        (8, 1),
+        (8, 2),
+        (8, 4),
+        (0, 1),
+        (0, 4),
+    ] {
+        print!(
+            "{:20} ({} + {}) x {}: ",
+            "hazarc-cache", rt, wt, ITERATIONS
+        );
+        io::stdout().flush().unwrap();
+        let before = Instant::now();
+        thread::scope(|scope| {
+            for _ in 0..rt {
+                scope.spawn(|_| {
+                    let mut cache = Cache::new(&hazarc_for_cache);
+                    for _ in 0..ITERATIONS {
+                        black_box(**cache.load());
+                    }
+                });
+            }
+            for _ in 0..wt {
+                scope.spawn(|_| {
+                    for i in 0..ITERATIONS {
+                        black_box(hazarc_for_cache.store(Arc::new(i)));
+                    }
+                });
+            }
+        })
+        .unwrap();
+        println!("{:?}", before.elapsed());
+    }
+
+    // --- LockFreeCell ---
+    let cell = LockFreeCell::new(42usize);
+    test_round(
+        "lf-cell-rcu",
+        ITERATIONS,
         || cell.read(|x| *x),
-        |i| {
-            cell.write_discard(|_| i);
-        },
+        |i| cell.store(i),
+    );
+
+    // --- SpinCell ---
+    let spin = SpinCell::new(42usize);
+    test_round(
+        "spin-cell",
+        ITERATIONS,
+        || spin.read(|x| *x),
+        |i| spin.write_discard(|x| *x = i),
     );
 }

@@ -130,75 +130,40 @@ mod tests {
     #[test]
     fn write_during_read() {
         let lock_free = Arc::new(LockFree::new(42));
-        let lf_reader = lock_free.clone();
-        let lf_writer = lock_free.clone();
-        let lf_reader1 = lock_free.clone();
-        let lf_writer1 = lock_free.clone();
-        let lf_reader2 = lock_free.clone();
-        let lf_writer2 = lock_free.clone();
 
-        // Start a long-running read
-        let read_handle = thread::spawn(move || {
-            for _ in 0..10 {
-                let read = lf_reader.read(|x| {
-                    let val = *x;
-                    thread::sleep(Duration::from_millis(50));
-
-                    val
-                });
-                println!("Readed: {read}")
-            }
-        });
-        let read_handle1 = thread::spawn(move || {
-            for _ in 0..10 {
-                let read = lf_reader1.read(|x| {
-                    let val = *x;
-                    thread::sleep(Duration::from_millis(50));
-
-                    val
-                });
-                println!("Readed: {read}")
-            }
-        });
-        let read_handle2 = thread::spawn(move || {
-            for _ in 0..10 {
-                let read = lf_reader2.read(|x| {
-                    let val = *x;
-                    thread::sleep(Duration::from_millis(50));
-
-                    val
-                });
-                println!("Readed: {read}")
-            }
-        });
+        let readers: Vec<_> = (0..3)
+            .map(|_| {
+                let lf = lock_free.clone();
+                thread::spawn(move || {
+                    for _ in 0..10 {
+                        let read = lf.read(|x| {
+                            let val = *x;
+                            thread::sleep(Duration::from_millis(50));
+                            val
+                        });
+                        println!("Read: {read}");
+                    }
+                })
+            })
+            .collect();
 
         thread::sleep(Duration::from_millis(10));
 
-        let write_handle = thread::spawn(move || {
-            for _ in 0..10 {
-                lf_writer.write_discard(|x| *x + 100);
-                thread::sleep(Duration::from_millis(10));
-            }
-        });
-        let write_handle1 = thread::spawn(move || {
-            for _ in 0..10 {
-                lf_writer1.write_discard(|x| *x + 100);
-                thread::sleep(Duration::from_millis(10));
-            }
-        });
-        let write_handle2 = thread::spawn(move || {
-            for _ in 0..10 {
-                lf_writer2.write_discard(|x| *x + 100);
-                thread::sleep(Duration::from_millis(10));
-            }
-        });
+        let writers: Vec<_> = (0..3)
+            .map(|_| {
+                let lf = lock_free.clone();
+                thread::spawn(move || {
+                    for _ in 0..10 {
+                        lf.write_discard(|x| *x + 100);
+                        thread::sleep(Duration::from_millis(10));
+                    }
+                })
+            })
+            .collect();
 
-        read_handle.join().unwrap();
-        write_handle.join().unwrap();
-        read_handle1.join().unwrap();
-        read_handle2.join().unwrap();
-        write_handle1.join().unwrap();
-        write_handle2.join().unwrap();
+        for handle in readers.into_iter().chain(writers) {
+            handle.join().unwrap();
+        }
 
         let new_result = lock_free.read(|x| *x);
         assert_eq!(new_result, 3042);

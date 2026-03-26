@@ -1,0 +1,548 @@
+    Finished `bench` profile [optimized] target(s) in 0.03s
+     Running benches/comparison.rs (target/release/deps/comparison-5694c0ff9162af08)
+Timer precision: 10 ns
+comparison                       fastest       │ slowest       │ median        │ mean          │ samples │ iters
+├─ arcshift_load                 1.776 ns      │ 1.798 ns      │ 1.798 ns      │ 1.797 ns      │ 100     │ 51200
+├─ arcshift_load_contended       9.489 ns      │ 92.48 ns      │ 48.17 ns      │ 48.65 ns      │ 100     │ 3200
+├─ arcshift_load_spin            14.12 ns      │ 14.28 ns      │ 14.2 ns       │ 14.17 ns      │ 100     │ 12800
+├─ arcshift_store                              │               │               │               │         │
+│  ├─ 0                          28.61 ns      │ 32.36 ns      │ 29.55 ns      │ 29.84 ns      │ 100     │ 3200
+│  ├─ 1                          29.8 ns       │ 1.054 µs      │ 34.8 ns       │ 45.5 ns       │ 100     │ 400
+│  ├─ 2                          28.3 ns       │ 37.05 ns      │ 29.53 ns      │ 29.67 ns      │ 100     │ 3200
+│  ├─ 4                          28.91 ns      │ 35.02 ns      │ 30 ns         │ 30.08 ns      │ 100     │ 6400
+│  ├─ 8                          65.55 ns      │ 215.8 ns      │ 69.92 ns      │ 76.42 ns      │ 100     │ 1600
+│  ╰─ 16                         28.75 ns      │ 48.64 ns      │ 30.17 ns      │ 31.47 ns      │ 100     │ 6400
+├─ arcshift_store_contended                    │               │               │               │         │
+│  ├─ 0                          28.61 ns      │ 32.05 ns      │ 29.86 ns      │ 29.88 ns      │ 100     │ 3200
+│  ├─ 1                          49.8 ns       │ 413 ns        │ 187.6 ns      │ 195.8 ns      │ 100     │ 400
+│  ├─ 2                          186.4 ns      │ 812.6 ns      │ 360.4 ns      │ 366.5 ns      │ 100     │ 800
+│  ├─ 4                          95.3 ns       │ 1.477 µs      │ 620.8 ns      │ 609.2 ns      │ 100     │ 200
+│  ├─ 8                          270.3 ns      │ 2.329 µs      │ 1.016 µs      │ 1.021 µs      │ 100     │ 200
+│  ╰─ 16                         380.3 ns      │ 3.596 µs      │ 1.104 µs      │ 1.228 µs      │ 100     │ 200
+├─ arcswap_load                  2.952 ns      │ 5.126 ns      │ 3.01 ns       │ 3.351 ns      │ 100     │ 51200
+├─ arcswap_load_contended        6.536 ns      │ 14.36 ns      │ 9.743 ns      │ 9.757 ns      │ 100     │ 12800
+├─ arcswap_load_no_slot          13.96 ns      │ 48.64 ns      │ 14.36 ns      │ 14.79 ns      │ 100     │ 12800
+├─ arcswap_load_no_slot_spin     18.73 ns      │ 19.05 ns      │ 18.89 ns      │ 18.89 ns      │ 100     │ 6400
+├─ arcswap_load_none             2.893 ns      │ 3.01 ns       │ 2.971 ns      │ 2.966 ns      │ 100     │ 51200
+├─ arcswap_load_spin             15.59 ns      │ 15.77 ns      │ 15.61 ns      │ 15.67 ns      │ 100     │ 6400
+├─ arcswap_store                               │               │               │               │         │
+│  ├─ 0                          47.39 ns      │ 50.2 ns       │ 48.64 ns      │ 48.83 ns      │ 100     │ 3200
+│  ├─ 1                          47.67 ns      │ 50.52 ns      │ 48.64 ns      │ 48.55 ns      │ 100     │ 3200
+│  ├─ 2                          64.92 ns      │ 131.3 ns      │ 66.17 ns      │ 67.43 ns      │ 100     │ 1600
+│  ├─ 4                          99.36 ns      │ 108.8 ns      │ 101.3 ns      │ 101.5 ns      │ 100     │ 1600
+│  ├─ 8                          185 ns        │ 565.8 ns      │ 192.8 ns      │ 221.5 ns      │ 100     │ 400
+│  ╰─ 16                         425.3 ns      │ 851.3 ns      │ 515.8 ns      │ 520.5 ns      │ 100     │ 200
+├─ arcswap_store_contended                     │               │               │               │         │
+│  ├─ 0                          450.8 ns      │ 4.698 µs      │ 520.8 ns      │ 580.1 ns      │ 100     │ 200
+│  ├─ 1                          510.8 ns      │ 1.497 µs      │ 596 ns        │ 601.4 ns      │ 100     │ 200
+│  ├─ 2                          440.8 ns      │ 706.3 ns      │ 586 ns        │ 588.6 ns      │ 100     │ 200
+│  ├─ 4                          480.8 ns      │ 1.132 µs      │ 680.8 ns      │ 682.6 ns      │ 100     │ 100
+│  ├─ 8                          680.8 ns      │ 1.036 µs      │ 811.3 ns      │ 816.9 ns      │ 100     │ 200
+│  ╰─ 16                         731.8 ns      │ 1.282 µs      │ 941.8 ns      │ 949 ns        │ 100     │ 100
+├─ hazarc_cache_load             0.681 ns      │ 1.759 ns      │ 0.692 ns      │ 0.707 ns      │ 100     │ 102400
+├─ hazarc_cache_load_contended   1.66 ns       │ 1.984 ns      │ 1.861 ns      │ 1.847 ns      │ 100     │ 102400
+├─ hazarc_load                   2.932 ns      │ 3.052 ns      │ 2.991 ns      │ 2.991 ns      │ 100     │ 51200
+├─ hazarc_load_contended         10.28 ns      │ 28.91 ns      │ 20.54 ns      │ 20.19 ns      │ 100     │ 6400
+├─ hazarc_load_no_slot           7.864 ns      │ 8.411 ns      │ 8.098 ns      │ 8.1 ns        │ 100     │ 12800
+├─ hazarc_load_no_slot_spin      17.17 ns      │ 17.34 ns      │ 17.33 ns      │ 17.27 ns      │ 100     │ 6400
+├─ hazarc_load_none              0.2 ns        │ 0.208 ns      │ 0.2 ns        │ 0.201 ns      │ 100     │ 409600
+├─ hazarc_load_spin              14.12 ns      │ 14.2 ns       │ 14.2 ns       │ 14.17 ns      │ 100     │ 12800
+├─ hazarc_store                                │               │               │               │         │
+│  ├─ 0                          7.63 ns       │ 8.333 ns      │ 7.942 ns      │ 7.962 ns      │ 100     │ 12800
+│  ├─ 1                          17.33 ns      │ 19.06 ns      │ 18.42 ns      │ 18.32 ns      │ 100     │ 6400
+│  ├─ 2                          18.89 ns      │ 19.22 ns      │ 19.05 ns      │ 19.07 ns      │ 100     │ 6400
+│  ├─ 4                          17.33 ns      │ 836.7 ns      │ 18.58 ns      │ 29.86 ns      │ 100     │ 3200
+│  ├─ 8                          29.23 ns      │ 653.5 ns      │ 29.86 ns      │ 48.3 ns       │ 100     │ 1600
+│  ╰─ 16                         89.8 ns       │ 706.3 ns      │ 95.3 ns       │ 103.7 ns      │ 100     │ 200
+├─ hazarc_store_contended                      │               │               │               │         │
+│  ├─ 0                          79.92 ns      │ 82.48 ns      │ 81.23 ns      │ 81.28 ns      │ 100     │ 1600
+│  ├─ 1                          92.42 ns      │ 637.1 ns      │ 123.8 ns      │ 128.9 ns      │ 100     │ 800
+│  ├─ 2                          123.8 ns      │ 216.4 ns      │ 163.8 ns      │ 164.8 ns      │ 100     │ 800
+│  ├─ 4                          205.3 ns      │ 388 ns        │ 292.8 ns      │ 290.6 ns      │ 100     │ 400
+│  ├─ 8                          275.8 ns      │ 616.3 ns      │ 388.3 ns      │ 399.5 ns      │ 100     │ 200
+│  ╰─ 16                         399.8 ns      │ 1.301 µs      │ 670.8 ns      │ 669.6 ns      │ 100     │ 100
+├─ lockfreecell_load             6.298 ns      │ 11.15 ns      │ 6.905 ns      │ 7.761 ns      │ 100     │ 25600
+├─ lockfreecell_load_contended   6.692 ns      │ 97.13 ns      │ 13.44 ns      │ 13.99 ns      │ 100     │ 25600
+├─ lockfreecell_load_spin        15.11 ns      │ 38.3 ns       │ 15.14 ns      │ 18.46 ns      │ 100     │ 3200
+├─ lockfreecell_store                          │               │               │               │         │
+│  ├─ 0                          27.36 ns      │ 45.17 ns      │ 29.23 ns      │ 29.74 ns      │ 100     │ 3200
+│  ├─ 1                          27.36 ns      │ 86.83 ns      │ 28.59 ns      │ 29.76 ns      │ 100     │ 3200
+│  ├─ 2                          26.42 ns      │ 117.5 ns      │ 27.36 ns      │ 29.51 ns      │ 100     │ 3200
+│  ├─ 4                          26.39 ns      │ 106.5 ns      │ 27.36 ns      │ 31.48 ns      │ 100     │ 3200
+│  ├─ 8                          26.7 ns       │ 338.5 ns      │ 27.98 ns      │ 35.29 ns      │ 100     │ 3200
+│  ╰─ 16                         60.55 ns      │ 620.6 ns      │ 64.92 ns      │ 95.04 ns      │ 100     │ 3200
+├─ lockfreecell_store_contended                │               │               │               │         │
+│  ├─ 0                          26.08 ns      │ 50.83 ns      │ 27.67 ns      │ 28.73 ns      │ 100     │ 3200
+│  ├─ 1                          62.11 ns      │ 94.05 ns      │ 73.53 ns      │ 74.2 ns       │ 100     │ 3200
+│  ├─ 2                          75.55 ns      │ 110.6 ns      │ 92.8 ns       │ 92.54 ns      │ 100     │ 3200
+│  ├─ 4                          50.48 ns      │ 329.1 ns      │ 166.3 ns      │ 135.3 ns      │ 100     │ 1600
+│  ├─ 8                          68.67 ns      │ 560.9 ns      │ 121.3 ns      │ 205.7 ns      │ 100     │ 800
+│  ╰─ 16                         102.4 ns      │ 713.6 ns      │ 156.9 ns      │ 270.2 ns      │ 100     │ 800
+├─ mutex_read                                  │               │               │               │         │
+│  ├─ t=1                        2.971 ns      │ 3.52 ns       │ 3.05 ns       │ 3.054 ns      │ 100     │ 51200
+│  ├─ t=2                        3.03 ns       │ 19.85 ns      │ 11.86 ns      │ 9.966 ns      │ 100     │ 51200
+│  ├─ t=4                        3.239 ns      │ 412.7 ns      │ 63.12 ns      │ 74.36 ns      │ 100     │ 6400
+│  ├─ t=8                        4.802 ns      │ 1.116 µs      │ 54.3 ns       │ 129 ns        │ 104     │ 832
+│  ╰─ t=16                       4.802 ns      │ 1.044 µs      │ 260.6 ns      │ 308.7 ns      │ 112     │ 1792
+├─ mutex_read_contended          7.239 ns      │ 13.8 ns       │ 10.52 ns      │ 10.56 ns      │ 100     │ 12800
+├─ mutex_write                                 │               │               │               │         │
+│  ├─ 0                          6.141 ns      │ 6.341 ns      │ 6.278 ns      │ 6.253 ns      │ 100     │ 25600
+│  ├─ 1                          6.141 ns      │ 6.337 ns      │ 6.219 ns      │ 6.205 ns      │ 100     │ 25600
+│  ├─ 2                          6.102 ns      │ 6.337 ns      │ 6.259 ns      │ 6.245 ns      │ 100     │ 25600
+│  ├─ 4                          6.364 ns      │ 109.3 ns      │ 6.708 ns      │ 8.379 ns      │ 100     │ 3200
+│  ├─ 8                          6.106 ns      │ 12.01 ns      │ 6.18 ns       │ 6.405 ns      │ 100     │ 25600
+│  ╰─ 16                         6.063 ns      │ 86.25 ns      │ 14.12 ns      │ 12.52 ns      │ 100     │ 25600
+├─ mutex_write_contended                       │               │               │               │         │
+│  ├─ 0                          14.04 ns      │ 15.06 ns      │ 14.43 ns      │ 14.45 ns      │ 100     │ 12800
+│  ├─ 1                          29.8 ns       │ 527.9 µs      │ 1.952 µs      │ 7.351 µs      │ 100     │ 100
+│  ├─ 2                          19.8 ns       │ 17.46 µs      │ 1.307 µs      │ 2.295 µs      │ 100     │ 100
+│  ├─ 4                          6.677 ns      │ 3.534 µs      │ 603.4 ns      │ 861.5 ns      │ 100     │ 1600
+│  ├─ 8                          19.8 ns       │ 26.2 µs       │ 3.09 µs       │ 4.824 µs      │ 100     │ 100
+│  ╰─ 16                         7.302 ns      │ 14.86 µs      │ 2.991 µs      │ 3.386 µs      │ 100     │ 800
+├─ rwlock_read                                 │               │               │               │         │
+│  ├─ t=1                        3.284 ns      │ 13.83 ns      │ 3.325 ns      │ 3.513 ns      │ 100     │ 51200
+│  ├─ t=2                        3.364 ns      │ 3.95 ns       │ 3.716 ns      │ 3.723 ns      │ 100     │ 25600
+│  ├─ t=4                        3.552 ns      │ 58.83 ns      │ 40.66 ns      │ 32.04 ns      │ 100     │ 6400
+│  ├─ t=8                        4.802 ns      │ 156.3 ns      │ 42.08 ns      │ 49.89 ns      │ 104     │ 1664
+│  ╰─ t=16                       4.239 ns      │ 290.9 ns      │ 8.552 ns      │ 57.86 ns      │ 112     │ 1792
+├─ rwlock_read_clone                           │               │               │               │         │
+│  ├─ t=1                        6.259 ns      │ 6.727 ns      │ 6.493 ns      │ 6.514 ns      │ 100     │ 25600
+│  ├─ t=2                        6.571 ns      │ 81.24 ns      │ 14.47 ns      │ 19.35 ns      │ 100     │ 25600
+│  ├─ t=4                        8.552 ns      │ 126.3 ns      │ 87.45 ns      │ 71.87 ns      │ 100     │ 3200
+│  ├─ t=8                        12.3 ns       │ 221.5 ns      │ 106.2 ns      │ 92.65 ns      │ 104     │ 832
+│  ╰─ t=16                       12.3 ns       │ 788.8 ns      │ 39.92 ns      │ 131.9 ns      │ 112     │ 448
+├─ rwlock_read_clone_spin                      │               │               │               │         │
+│  ├─ t=1                        14.74 ns      │ 14.83 ns      │ 14.75 ns      │ 14.78 ns      │ 100     │ 12800
+│  ├─ t=2                        14.81 ns      │ 15.77 ns      │ 15.22 ns      │ 15.18 ns      │ 100     │ 6400
+│  ├─ t=4                        15.48 ns      │ 122.5 ns      │ 68.08 ns      │ 62.89 ns      │ 100     │ 1600
+│  ├─ t=8                        16.05 ns      │ 215.3 ns      │ 73.11 ns      │ 81.24 ns      │ 104     │ 832
+│  ╰─ t=16                       16.05 ns      │ 635.9 ns      │ 201.4 ns      │ 258.7 ns      │ 112     │ 896
+├─ rwlock_read_contended                       │               │               │               │         │
+│  ├─ t=1                        4.653 ns      │ 8.177 ns      │ 5.833 ns      │ 5.861 ns      │ 100     │ 12800
+│  ├─ t=2                        5.598 ns      │ 33.92 ns      │ 8.02 ns       │ 13.08 ns      │ 100     │ 6400
+│  ├─ t=4                        6.364 ns      │ 264.9 ns      │ 51.45 ns      │ 52.12 ns      │ 100     │ 3200
+│  ├─ t=8                        9.802 ns      │ 605.9 ns      │ 64.3 ns       │ 78.64 ns      │ 104     │ 832
+│  ╰─ t=16                       5.427 ns      │ 1.244 µs      │ 12.64 ns      │ 127.7 ns      │ 112     │ 1792
+├─ rwlock_read_contended_clone                 │               │               │               │         │
+│  ├─ t=1                        20.17 ns      │ 59.58 ns      │ 33.45 ns      │ 35.2 ns       │ 100     │ 3200
+│  ├─ t=2                        17.67 ns      │ 99.98 ns      │ 36.59 ns      │ 38.12 ns      │ 100     │ 3200
+│  ├─ t=4                        11.67 ns      │ 687.9 ns      │ 177.9 ns      │ 188 ns        │ 100     │ 1600
+│  ├─ t=8                        12.3 ns       │ 2.172 µs      │ 319.8 ns      │ 521 ns        │ 104     │ 832
+│  ╰─ t=16                       24.8 ns       │ 1.222 µs      │ 92.55 ns      │ 157.2 ns      │ 112     │ 224
+├─ rwlock_read_spin                            │               │               │               │         │
+│  ├─ t=1                        14.12 ns      │ 61.55 ns      │ 14.2 ns       │ 14.65 ns      │ 100     │ 12800
+│  ├─ t=2                        14.51 ns      │ 62.81 ns      │ 17.17 ns      │ 17.37 ns      │ 100     │ 12800
+│  ├─ t=4                        14.52 ns      │ 63.81 ns      │ 37.21 ns      │ 35.95 ns      │ 100     │ 6400
+│  ├─ t=8                        16.7 ns       │ 148.2 ns      │ 88.23 ns      │ 88.94 ns      │ 104     │ 3328
+│  ╰─ t=16                       14.8 ns       │ 304.1 ns      │ 28.67 ns      │ 71.65 ns      │ 112     │ 896
+├─ rwlock_write                                │               │               │               │         │
+│  ├─ 0                          6.063 ns      │ 6.302 ns      │ 6.259 ns      │ 6.238 ns      │ 100     │ 25600
+│  ├─ 1                          6.102 ns      │ 15.57 ns      │ 6.219 ns      │ 6.293 ns      │ 100     │ 25600
+│  ├─ 2                          6.059 ns      │ 13.02 ns      │ 6.45 ns       │ 6.446 ns      │ 100     │ 12800
+│  ├─ 4                          6.141 ns      │ 8.411 ns      │ 6.18 ns       │ 6.219 ns      │ 100     │ 25600
+│  ├─ 8                          6.063 ns      │ 15.06 ns      │ 6.18 ns       │ 6.29 ns       │ 100     │ 25600
+│  ╰─ 16                         6.063 ns      │ 11.19 ns      │ 6.141 ns      │ 6.283 ns      │ 100     │ 25600
+├─ rwlock_write_contended                      │               │               │               │         │
+│  ├─ 0                          6.024 ns      │ 7.317 ns      │ 6.219 ns      │ 6.261 ns      │ 100     │ 25600
+│  ├─ 1                          1.311 µs      │ 15.45 µs      │ 2.023 µs      │ 2.454 µs      │ 100     │ 100
+│  ├─ 2                          19.8 ns       │ 5.83 µs       │ 29.8 ns       │ 838.2 ns      │ 100     │ 100
+│  ├─ 4                          19.8 ns       │ 7.654 µs      │ 19.8 ns       │ 596.3 ns      │ 100     │ 100
+│  ├─ 8                          19.8 ns       │ 8.575 µs      │ 29.8 ns       │ 1.727 µs      │ 100     │ 100
+│  ╰─ 16                         19.8 ns       │ 3.774 ms      │ 12.99 µs      │ 369.9 µs      │ 100     │ 100
+├─ rwlock_write_contended_clone                │               │               │               │         │
+│  ├─ 0                          6.024 ns      │ 37.33 ns      │ 6.141 ns      │ 6.459 ns      │ 100     │ 25600
+│  ├─ 1                          14.36 ns      │ 27.97 ns      │ 21.72 ns      │ 21.46 ns      │ 100     │ 6400
+│  ├─ 2                          27.36 ns      │ 140 ns        │ 72.11 ns      │ 72.28 ns      │ 100     │ 1600
+│  ├─ 4                          14.8 ns       │ 5.179 µs      │ 300.3 ns      │ 534.6 ns      │ 100     │ 200
+│  ├─ 8                          19.8 ns       │ 15.33 µs      │ 70.3 ns       │ 2.071 µs      │ 100     │ 100
+│  ╰─ 16                         29.8 ns       │ 3.663 ms      │ 11.51 µs      │ 142.1 µs      │ 100     │ 100
+├─ spincell_load                 3.305 ns      │ 3.423 ns      │ 3.364 ns      │ 3.367 ns      │ 100     │ 51200
+├─ spincell_load_contended       3.634 ns      │ 9.86 ns       │ 7.669 ns      │ 7.473 ns      │ 100     │ 25600
+├─ spincell_load_spin            14.03 ns      │ 19.06 ns      │ 14.05 ns      │ 14.16 ns      │ 100     │ 6400
+├─ spincell_store                              │               │               │               │         │
+│  ├─ 0                          6.219 ns      │ 6.962 ns      │ 6.38 ns       │ 6.403 ns      │ 100     │ 25600
+│  ├─ 1                          6.219 ns      │ 6.731 ns      │ 6.419 ns      │ 6.427 ns      │ 100     │ 25600
+│  ├─ 2                          6.677 ns      │ 77.42 ns      │ 7.927 ns      │ 8.668 ns      │ 100     │ 1600
+│  ├─ 4                          6.219 ns      │ 6.848 ns      │ 6.38 ns       │ 6.423 ns      │ 100     │ 25600
+│  ├─ 8                          6.376 ns      │ 9.938 ns      │ 6.688 ns      │ 6.881 ns      │ 100     │ 25600
+│  ╰─ 16                         6.259 ns      │ 9.86 ns       │ 6.454 ns      │ 6.545 ns      │ 100     │ 25600
+╰─ spincell_store_contended                    │               │               │               │         │
+   ├─ 0                          6.219 ns      │ 7.43 ns       │ 6.376 ns      │ 6.408 ns      │ 100     │ 25600
+   ├─ 1                          10.6 ns       │ 17.72 ns      │ 13.38 ns      │ 13.4 ns       │ 100     │ 12800
+   ├─ 2                          14.13 ns      │ 46.92 ns      │ 19.99 ns      │ 20.57 ns      │ 100     │ 12800
+   ├─ 4                          28.3 ns       │ 101.5 ns      │ 45.52 ns      │ 50.71 ns      │ 100     │ 3200
+   ├─ 8                          24.8 ns       │ 14.86 µs      │ 1.693 µs      │ 3.185 µs      │ 100     │ 200
+   ╰─ 16                         190.8 ns      │ 2.59 ms       │ 33.89 µs      │ 102.4 µs      │ 100     │ 100
+
+   Compiling lock_free_cell v0.1.0 (/home/r33x/projects/lock_free_cell)
+    Finished `bench` profile [optimized] target(s) in 1.79s
+     Running benches/bench.rs (target/release/deps/bench-13ecf13d62fda8e3)
+Gnuplot not found, using plotters backend
+Benchmarking mutex_read
+Benchmarking mutex_read: Warming up for 3.0000 s
+Benchmarking mutex_read: Collecting 100 samples in estimated 5.0000 s (1.5B iterations)
+Benchmarking mutex_read: Analyzing
+mutex_read              time:   [3.2239 ns 3.2272 ns 3.2319 ns]
+Found 8 outliers among 100 measurements (8.00%)
+  3 (3.00%) high mild
+  5 (5.00%) high severe
+
+Benchmarking mutex_read_contended
+Benchmarking mutex_read_contended: Warming up for 3.0000 s
+Benchmarking mutex_read_contended: Collecting 100 samples in estimated 5.0001 s (115M iterations)
+Benchmarking mutex_read_contended: Analyzing
+mutex_read_contended    time:   [42.034 ns 42.760 ns 43.696 ns]
+Found 11 outliers among 100 measurements (11.00%)
+  4 (4.00%) high mild
+  7 (7.00%) high severe
+
+Benchmarking mutex_write
+Benchmarking mutex_write: Warming up for 3.0000 s
+Benchmarking mutex_write: Collecting 100 samples in estimated 5.0000 s (1.5B iterations)
+Benchmarking mutex_write: Analyzing
+mutex_write             time:   [3.2250 ns 3.2300 ns 3.2354 ns]
+Found 10 outliers among 100 measurements (10.00%)
+  3 (3.00%) high mild
+  7 (7.00%) high severe
+
+Benchmarking rwlock_read
+Benchmarking rwlock_read: Warming up for 3.0000 s
+Benchmarking rwlock_read: Collecting 100 samples in estimated 5.0000 s (1.4B iterations)
+Benchmarking rwlock_read: Analyzing
+rwlock_read             time:   [3.5239 ns 3.5261 ns 3.5285 ns]
+Found 5 outliers among 100 measurements (5.00%)
+  1 (1.00%) low severe
+  2 (2.00%) low mild
+  2 (2.00%) high mild
+
+Benchmarking rwlock_read_contended
+Benchmarking rwlock_read_contended: Warming up for 3.0000 s
+Benchmarking rwlock_read_contended: Collecting 100 samples in estimated 5.0001 s (120M iterations)
+Benchmarking rwlock_read_contended: Analyzing
+rwlock_read_contended   time:   [40.786 ns 41.083 ns 41.347 ns]
+
+Benchmarking rwlock_read_while_writing
+Benchmarking rwlock_read_while_writing: Warming up for 3.0000 s
+Benchmarking rwlock_read_while_writing: Collecting 100 samples in estimated 5.0000 s (706M iterations)
+Benchmarking rwlock_read_while_writing: Analyzing
+rwlock_read_while_writing
+                        time:   [7.1033 ns 7.1277 ns 7.1516 ns]
+Found 8 outliers among 100 measurements (8.00%)
+  1 (1.00%) low severe
+  3 (3.00%) low mild
+  1 (1.00%) high mild
+  3 (3.00%) high severe
+
+Benchmarking rwlock_write
+Benchmarking rwlock_write: Warming up for 3.0000 s
+Benchmarking rwlock_write: Collecting 100 samples in estimated 5.0000 s (1.4B iterations)
+Benchmarking rwlock_write: Analyzing
+rwlock_write            time:   [3.6495 ns 3.6666 ns 3.6853 ns]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high mild
+
+Benchmarking rwlock_write_contended_4r
+Benchmarking rwlock_write_contended_4r: Warming up for 3.0000 s
+Benchmarking rwlock_write_contended_4r: Collecting 100 samples in estimated 5.0000 s (131M iterations)
+Benchmarking rwlock_write_contended_4r: Analyzing
+rwlock_write_contended_4r
+                        time:   [38.093 ns 38.582 ns 39.121 ns]
+Found 3 outliers among 100 measurements (3.00%)
+  1 (1.00%) high mild
+  2 (2.00%) high severe
+
+Benchmarking rwlock_write_contended_8r
+Benchmarking rwlock_write_contended_8r: Warming up for 3.0000 s
+Benchmarking rwlock_write_contended_8r: Collecting 100 samples in estimated 5.0002 s (79M iterations)
+Benchmarking rwlock_write_contended_8r: Analyzing
+rwlock_write_contended_8r
+                        time:   [61.581 ns 63.902 ns 66.187 ns]
+
+Benchmarking arcswap_load
+Benchmarking arcswap_load: Warming up for 3.0000 s
+Benchmarking arcswap_load: Collecting 100 samples in estimated 5.0000 s (1.5B iterations)
+Benchmarking arcswap_load: Analyzing
+arcswap_load            time:   [3.3331 ns 3.3417 ns 3.3518 ns]
+Found 9 outliers among 100 measurements (9.00%)
+  5 (5.00%) high mild
+  4 (4.00%) high severe
+
+Benchmarking arcswap_load_contended
+Benchmarking arcswap_load_contended: Warming up for 3.0000 s
+Benchmarking arcswap_load_contended: Collecting 100 samples in estimated 5.0000 s (1.5B iterations)
+Benchmarking arcswap_load_contended: Analyzing
+arcswap_load_contended  time:   [3.3898 ns 3.4107 ns 3.4368 ns]
+Found 11 outliers among 100 measurements (11.00%)
+  7 (7.00%) high mild
+  4 (4.00%) high severe
+
+Benchmarking arcswap_load_while_writing
+Benchmarking arcswap_load_while_writing: Warming up for 3.0000 s
+Benchmarking arcswap_load_while_writing: Collecting 100 samples in estimated 5.0000 s (303M iterations)
+Benchmarking arcswap_load_while_writing: Analyzing
+arcswap_load_while_writing
+                        time:   [17.196 ns 17.389 ns 17.584 ns]
+Found 7 outliers among 100 measurements (7.00%)
+  3 (3.00%) low mild
+  3 (3.00%) high mild
+  1 (1.00%) high severe
+
+Benchmarking arcswap_store
+Benchmarking arcswap_store: Warming up for 3.0000 s
+Benchmarking arcswap_store: Collecting 100 samples in estimated 5.0002 s (99M iterations)
+Benchmarking arcswap_store: Analyzing
+arcswap_store           time:   [50.502 ns 50.620 ns 50.756 ns]
+Found 8 outliers among 100 measurements (8.00%)
+  6 (6.00%) high mild
+  2 (2.00%) high severe
+
+Benchmarking arcswap_rcu
+Benchmarking arcswap_rcu: Warming up for 3.0000 s
+Benchmarking arcswap_rcu: Collecting 100 samples in estimated 5.0003 s (73M iterations)
+Benchmarking arcswap_rcu: Analyzing
+arcswap_rcu             time:   [68.278 ns 68.408 ns 68.574 ns]
+Found 9 outliers among 100 measurements (9.00%)
+  3 (3.00%) high mild
+  6 (6.00%) high severe
+
+Benchmarking arcswap_store_contended_4r
+Benchmarking arcswap_store_contended_4r: Warming up for 3.0000 s
+Benchmarking arcswap_store_contended_4r: Collecting 100 samples in estimated 5.0008 s (19M iterations)
+Benchmarking arcswap_store_contended_4r: Analyzing
+arcswap_store_contended_4r
+                        time:   [257.65 ns 258.67 ns 259.76 ns]
+Found 2 outliers among 100 measurements (2.00%)
+  2 (2.00%) high mild
+
+Benchmarking arcswap_store_contended_8r
+Benchmarking arcswap_store_contended_8r: Warming up for 3.0000 s
+Benchmarking arcswap_store_contended_8r: Collecting 100 samples in estimated 5.0006 s (12M iterations)
+Benchmarking arcswap_store_contended_8r: Analyzing
+arcswap_store_contended_8r
+                        time:   [415.90 ns 417.74 ns 419.57 ns]
+
+Benchmarking arcshift_load
+Benchmarking arcshift_load: Warming up for 3.0000 s
+Benchmarking arcshift_load: Collecting 100 samples in estimated 5.0000 s (12B iterations)
+Benchmarking arcshift_load: Analyzing
+arcshift_load           time:   [418.02 ps 419.49 ps 421.26 ps]
+Found 9 outliers among 100 measurements (9.00%)
+  6 (6.00%) high mild
+  3 (3.00%) high severe
+
+Benchmarking arcshift_load_contended
+Benchmarking arcshift_load_contended: Warming up for 3.0000 s
+Benchmarking arcshift_load_contended: Collecting 100 samples in estimated 5.0000 s (12B iterations)
+Benchmarking arcshift_load_contended: Analyzing
+arcshift_load_contended time:   [419.10 ps 419.49 ps 419.87 ps]
+Found 9 outliers among 100 measurements (9.00%)
+  5 (5.00%) high mild
+  4 (4.00%) high severe
+
+Benchmarking arcshift_update
+Benchmarking arcshift_update: Warming up for 3.0000 s
+Benchmarking arcshift_update: Collecting 100 samples in estimated 5.0001 s (226M iterations)
+Benchmarking arcshift_update: Analyzing
+arcshift_update         time:   [22.233 ns 22.242 ns 22.253 ns]
+Found 6 outliers among 100 measurements (6.00%)
+  5 (5.00%) high mild
+  1 (1.00%) high severe
+
+Benchmarking hazarc_load
+Benchmarking hazarc_load: Warming up for 3.0000 s
+Benchmarking hazarc_load: Collecting 100 samples in estimated 5.0000 s (1.5B iterations)
+Benchmarking hazarc_load: Analyzing
+hazarc_load             time:   [3.2187 ns 3.2235 ns 3.2288 ns]
+Found 8 outliers among 100 measurements (8.00%)
+  3 (3.00%) high mild
+  5 (5.00%) high severe
+
+Benchmarking hazarc_load_contended
+Benchmarking hazarc_load_contended: Warming up for 3.0000 s
+Benchmarking hazarc_load_contended: Collecting 100 samples in estimated 5.0000 s (1.5B iterations)
+Benchmarking hazarc_load_contended: Analyzing
+hazarc_load_contended   time:   [3.2515 ns 3.2543 ns 3.2583 ns]
+Found 2 outliers among 100 measurements (2.00%)
+  1 (1.00%) high mild
+  1 (1.00%) high severe
+
+Benchmarking hazarc_load_while_writing
+Benchmarking hazarc_load_while_writing: Warming up for 3.0000 s
+Benchmarking hazarc_load_while_writing: Collecting 100 samples in estimated 5.0000 s (261M iterations)
+Benchmarking hazarc_load_while_writing: Analyzing
+hazarc_load_while_writing
+                        time:   [19.821 ns 19.915 ns 19.997 ns]
+Found 11 outliers among 100 measurements (11.00%)
+  6 (6.00%) low severe
+  3 (3.00%) low mild
+  2 (2.00%) high severe
+
+Benchmarking hazarc_store
+Benchmarking hazarc_store: Warming up for 3.0000 s
+Benchmarking hazarc_store: Collecting 100 samples in estimated 5.0000 s (487M iterations)
+Benchmarking hazarc_store: Analyzing
+hazarc_store            time:   [10.377 ns 10.407 ns 10.434 ns]
+
+Benchmarking hazarc_store_contended_4r
+Benchmarking hazarc_store_contended_4r: Warming up for 3.0000 s
+Benchmarking hazarc_store_contended_4r: Collecting 100 samples in estimated 5.0000 s (22M iterations)
+Benchmarking hazarc_store_contended_4r: Analyzing
+hazarc_store_contended_4r
+                        time:   [223.55 ns 224.32 ns 225.06 ns]
+Found 2 outliers among 100 measurements (2.00%)
+  1 (1.00%) high mild
+  1 (1.00%) high severe
+
+Benchmarking hazarc_store_contended_8r
+Benchmarking hazarc_store_contended_8r: Warming up for 3.0000 s
+Benchmarking hazarc_store_contended_8r: Collecting 100 samples in estimated 5.0005 s (16M iterations)
+Benchmarking hazarc_store_contended_8r: Analyzing
+hazarc_store_contended_8r
+                        time:   [308.77 ns 310.10 ns 311.43 ns]
+Found 8 outliers among 100 measurements (8.00%)
+  1 (1.00%) low severe
+  6 (6.00%) low mild
+  1 (1.00%) high mild
+
+Benchmarking hazarc_cache_load
+Benchmarking hazarc_cache_load: Warming up for 3.0000 s
+Benchmarking hazarc_cache_load: Collecting 100 samples in estimated 5.0000 s (9.2B iterations)
+Benchmarking hazarc_cache_load: Analyzing
+hazarc_cache_load       time:   [537.32 ps 538.26 ps 539.47 ps]
+Found 10 outliers among 100 measurements (10.00%)
+  4 (4.00%) high mild
+  6 (6.00%) high severe
+
+Benchmarking hazarc_cache_load_while_writing
+Benchmarking hazarc_cache_load_while_writing: Warming up for 3.0000 s
+Benchmarking hazarc_cache_load_while_writing: Collecting 100 samples in estimated 5.0000 s (1.8B iterations)
+Benchmarking hazarc_cache_load_while_writing: Analyzing
+hazarc_cache_load_while_writing
+                        time:   [2.5162 ns 2.5480 ns 2.5808 ns]
+Found 19 outliers among 100 measurements (19.00%)
+  2 (2.00%) low severe
+  12 (12.00%) low mild
+  1 (1.00%) high mild
+  4 (4.00%) high severe
+
+Benchmarking lockfreecell_read
+Benchmarking lockfreecell_read: Warming up for 3.0000 s
+Benchmarking lockfreecell_read: Collecting 100 samples in estimated 5.0000 s (1.3B iterations)
+Benchmarking lockfreecell_read: Analyzing
+lockfreecell_read       time:   [3.8008 ns 3.8069 ns 3.8129 ns]
+Found 6 outliers among 100 measurements (6.00%)
+  1 (1.00%) low mild
+  3 (3.00%) high mild
+  2 (2.00%) high severe
+
+Benchmarking lockfreecell_read_contended
+Benchmarking lockfreecell_read_contended: Warming up for 3.0000 s
+Benchmarking lockfreecell_read_contended: Collecting 100 samples in estimated 5.0000 s (1.3B iterations)
+Benchmarking lockfreecell_read_contended: Analyzing
+lockfreecell_read_contended
+                        time:   [3.8705 ns 3.8841 ns 3.9000 ns]
+Found 8 outliers among 100 measurements (8.00%)
+  5 (5.00%) high mild
+  3 (3.00%) high severe
+
+Benchmarking lockfreecell_read_while_writing
+Benchmarking lockfreecell_read_while_writing: Warming up for 3.0000 s
+Benchmarking lockfreecell_read_while_writing: Collecting 100 samples in estimated 5.0000 s (625M iterations)
+Benchmarking lockfreecell_read_while_writing: Analyzing
+lockfreecell_read_while_writing
+                        time:   [7.6799 ns 7.7228 ns 7.7709 ns]
+Found 14 outliers among 100 measurements (14.00%)
+  1 (1.00%) low severe
+  3 (3.00%) low mild
+  5 (5.00%) high mild
+  5 (5.00%) high severe
+
+Benchmarking lockfreecell_write
+Benchmarking lockfreecell_write: Warming up for 3.0000 s
+Benchmarking lockfreecell_write: Collecting 100 samples in estimated 5.0000 s (116M iterations)
+Benchmarking lockfreecell_write: Analyzing
+lockfreecell_write      time:   [42.679 ns 42.768 ns 42.861 ns]
+Found 10 outliers among 100 measurements (10.00%)
+  4 (4.00%) low mild
+  2 (2.00%) high mild
+  4 (4.00%) high severe
+
+Benchmarking lockfreecell_write_contended_4r
+Benchmarking lockfreecell_write_contended_4r: Warming up for 3.0000 s
+Benchmarking lockfreecell_write_contended_4r: Collecting 100 samples in estimated 5.0007 s (35M iterations)
+Benchmarking lockfreecell_write_contended_4r: Analyzing
+lockfreecell_write_contended_4r
+                        time:   [141.47 ns 141.80 ns 142.15 ns]
+Found 4 outliers among 100 measurements (4.00%)
+  4 (4.00%) high mild
+
+Benchmarking lockfreecell_write_contended_8r
+Benchmarking lockfreecell_write_contended_8r: Warming up for 3.0000 s
+Benchmarking lockfreecell_write_contended_8r: Collecting 100 samples in estimated 5.0007 s (25M iterations)
+Benchmarking lockfreecell_write_contended_8r: Analyzing
+lockfreecell_write_contended_8r
+                        time:   [198.39 ns 199.26 ns 200.18 ns]
+Found 7 outliers among 100 measurements (7.00%)
+  7 (7.00%) high mild
+
+Benchmarking spincell_read
+Benchmarking spincell_read: Warming up for 3.0000 s
+Benchmarking spincell_read: Collecting 100 samples in estimated 5.0000 s (1.4B iterations)
+Benchmarking spincell_read: Analyzing
+spincell_read           time:   [3.5913 ns 3.5933 ns 3.5957 ns]
+Found 7 outliers among 100 measurements (7.00%)
+  4 (4.00%) high mild
+  3 (3.00%) high severe
+
+Benchmarking spincell_read_contended
+Benchmarking spincell_read_contended: Warming up for 3.0000 s
+Benchmarking spincell_read_contended: Collecting 100 samples in estimated 5.0001 s (193M iterations)
+Benchmarking spincell_read_contended: Analyzing
+spincell_read_contended time:   [25.039 ns 25.172 ns 25.362 ns]
+Found 3 outliers among 100 measurements (3.00%)
+  2 (2.00%) high mild
+  1 (1.00%) high severe
+
+Benchmarking spincell_read_while_writing
+Benchmarking spincell_read_while_writing: Warming up for 3.0000 s
+Benchmarking spincell_read_while_writing: Collecting 100 samples in estimated 5.0000 s (624M iterations)
+Benchmarking spincell_read_while_writing: Analyzing
+spincell_read_while_writing
+                        time:   [8.1629 ns 8.2244 ns 8.2937 ns]
+Found 5 outliers among 100 measurements (5.00%)
+  1 (1.00%) low severe
+  2 (2.00%) high mild
+  2 (2.00%) high severe
+
+Benchmarking spincell_write
+Benchmarking spincell_write: Warming up for 3.0000 s
+Benchmarking spincell_write: Collecting 100 samples in estimated 5.0000 s (1.5B iterations)
+Benchmarking spincell_write: Analyzing
+spincell_write          time:   [3.2565 ns 3.2688 ns 3.2818 ns]
+Found 8 outliers among 100 measurements (8.00%)
+  6 (6.00%) high mild
+  2 (2.00%) high severe
+
+Benchmarking spincell_write_contended_4r
+Benchmarking spincell_write_contended_4r: Warming up for 3.0000 s
+Benchmarking spincell_write_contended_4r: Collecting 100 samples in estimated 5.0000 s (287M iterations)
+Benchmarking spincell_write_contended_4r: Analyzing
+spincell_write_contended_4r
+                        time:   [17.093 ns 17.192 ns 17.294 ns]
+Found 8 outliers among 100 measurements (8.00%)
+  2 (2.00%) low severe
+  2 (2.00%) low mild
+  1 (1.00%) high mild
+  3 (3.00%) high severe
+
+Benchmarking spincell_write_contended_8r
+Benchmarking spincell_write_contended_8r: Warming up for 3.0000 s
+Benchmarking spincell_write_contended_8r: Collecting 100 samples in estimated 5.0053 s (3.0M iterations)
+Benchmarking spincell_write_contended_8r: Analyzing
+spincell_write_contended_8r
+                        time:   [1.6673 µs 1.6818 µs 1.6972 µs]
+Found 8 outliers among 100 measurements (8.00%)
+  2 (2.00%) low mild
+  5 (5.00%) high mild
+  1 (1.00%) high severe
+

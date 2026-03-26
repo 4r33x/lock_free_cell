@@ -3,24 +3,26 @@ name = "lock_free_cell"
 version = "0.1.0"
 edition = "2024"
 
+[[bench]]
+harness = false
+name = "int_access"
+
+[[bench]]
+harness = false
+name = "bench"
+
+[[bench]]
+harness = false
+name = "comparison"
+
 [dependencies]
 crossbeam-utils = "0.8.21"
 nohash-hasher = "0.2.0"
-seize = "0.5.0"
-
+seize = "0.5.1"
 
 [dev-dependencies]
-criterion = "0.6.0"
-arcshift = "0.3.1"
-arc-swap = "1.7.1"
-
-[[bench]]
-name = "int_access"
-harness = false
-
-[[bench]]
-name = "bench"
-harness = false
-
-
-
+arc-swap = "1.9"
+arcshift = "0.4.2"
+criterion = "0.8"
+divan = "0.1"
+hazarc = "0.2"
